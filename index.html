@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<title>Hub Accounting — SGEC</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#fff;overflow:hidden;height:100vh;}
+button{cursor:pointer;font-family:inherit;}
+a{text-decoration:none;}
+input,select,textarea{font-family:'Inter',sans-serif;}
+
+/* ── LOGIN ── */
+#login-screen{width:100vw;height:100vh;background:#2643FF;display:flex;align-items:center;justify-content:center;}
+.login-box{width:540px;}
+.login-title{font-family:'Archivo',sans-serif;font-weight:700;font-size:48px;color:#fff;margin-bottom:40px;}
+.login-label{display:block;font-family:'Inter',sans-serif;font-weight:500;font-size:16px;color:#fff;margin-bottom:8px;}
+.login-input{width:100%;height:55px;border-radius:12px;border:1px solid #CBD5E0;background:#F7FAFC;padding:0 16px;font-size:16px;color:#1E2939;outline:none;margin-bottom:20px;}
+.login-input:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,0.3);}
+.login-btn{width:100%;height:60px;background:#F9FAFB;border:none;border-radius:20px;font-family:'Archivo',sans-serif;font-weight:600;font-size:20px;color:#155DFC;margin-top:16px;transition:opacity .15s;}
+.login-btn:hover{opacity:.9;}
+
+/* ── APP LAYOUT ── */
+#app-layout{width:100vw;height:100vh;display:none;flex-direction:row;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:250px;min-width:250px;height:100vh;background:#fff;border-right:1px solid rgba(0,0,0,0.09);box-shadow:4px 0 8px rgba(0,0,0,0.12);display:flex;flex-direction:column;z-index:10;}
+.sidebar-logo{padding:28px 20px 18px;border-bottom:1px solid #F3F4F6;}
+.sidebar-logo-text{font-family:'Archivo',sans-serif;font-weight:700;font-size:20px;color:#2643FF;}
+.sidebar-logo-sub{font-size:11px;color:#9CA3AF;margin-top:2px;letter-spacing:.5px;}
+.sidebar-nav{padding:14px 7px;display:flex;flex-direction:column;gap:4px;flex:1;}
+.si{height:54px;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 14px 0 18px;font-family:'Archivo',sans-serif;font-weight:600;font-size:19px;color:#1E2939;cursor:pointer;transition:background .12s;}
+.si:hover{background:#F0F4FF;}
+.si.active{background:#2643FF;color:#fff;}
+.si svg{flex-shrink:0;opacity:.85;}
+.si.active svg{opacity:1;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid #F3F4F6;display:flex;align-items:center;gap:10px;}
+.sf-avatar{width:36px;height:36px;border-radius:50%;background:#EFF6FF;color:#2643FF;font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sf-info{flex:1;min-width:0;}
+.sf-name{font-size:13px;font-weight:600;color:#1E2939;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sf-role{font-size:11px;color:#9CA3AF;}
+.sf-logout{width:32px;height:32px;border:none;background:#FEF2F2;border-radius:8px;color:#DC2626;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sf-logout:hover{background:#FEE2E2;}
+
+/* ── MAIN CONTENT ── */
+#main-content{flex:1;height:100vh;overflow-y:auto;background:#fff;}
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── COMMON PAGE STYLES ── */
+.header-band{background:rgba(237,245,255,.55);height:160px;padding:44px 28px 0;border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:flex-start;justify-content:space-between;}
+.header-left{}
+.page-title{font-family:'Archivo',sans-serif;font-weight:600;font-size:48px;color:#155DFC;line-height:1;}
+.page-subtitle{font-family:'Archivo',sans-serif;font-weight:600;font-size:18px;color:#002FBB;letter-spacing:2px;margin-top:6px;}
+.content{padding:22px 28px 48px;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;height:46px;padding:0 22px;transition:opacity .15s;}
+.btn:hover{opacity:.88;}
+.btn-primary{background:#2643FF;color:#fff;}
+.btn-secondary{background:#fff;color:#374151;border:1.5px solid #D1D5DC;}
+.btn-secondary:hover{background:#F9FAFB;}
+.btn-danger{background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA;}
+.btn-sm{height:36px;padding:0 14px;font-size:13px;border-radius:8px;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;justify-content:flex-end;gap:10px;margin-bottom:18px;align-items:center;}
+.toolbar-left{margin-right:auto;display:flex;gap:10px;align-items:center;}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:#fff;border:1px solid rgba(0,0,0,.13);border-radius:14px;box-shadow:0 2px 4px rgba(0,0,0,.07);padding:16px 20px;display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.fi{background:#fff;border:1px solid #D1D5DC;border-radius:12px;height:44px;padding:0 14px;font-size:14px;color:#364153;outline:none;}
+.fi:focus{border-color:#2643FF;box-shadow:0 0 0 2px rgba(38,67,255,.1);}
+.fi-grow{flex:1;min-width:180px;}
+.fi-w{width:170px;}
+.fi::placeholder{color:#9CA3AF;}
+
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 2px 4px rgba(0,0,0,.06);padding:20px 22px;}
+.stat-label{font-size:13px;color:#6B7280;margin-bottom:6px;}
+.stat-value{font-family:'Archivo',sans-serif;font-size:30px;font-weight:700;color:#1E2939;}
+.stat-sub{font-size:12px;color:#9CA3AF;margin-top:4px;}
+.stat-blue .stat-value{color:#2643FF;}
+.stat-green .stat-value{color:#16A34A;}
+.stat-yellow .stat-value{color:#D97706;}
+.stat-red .stat-value{color:#DC2626;}
+
+/* ── TABLE ── */
+.table-wrap{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:#F9FAFB;border-bottom:1px solid #E5E7EB;}
+thead th{padding:14px 20px;text-align:left;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:#364153;white-space:nowrap;}
+tbody tr{border-bottom:1px solid #F3F4F6;transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#FAFBFF;}
+tbody td{padding:13px 20px;font-size:13px;color:#4A5565;}
+td.fw{font-weight:600;color:#1E2939;font-family:'Archivo',sans-serif;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.b-green{background:#DCFCE7;color:#16A34A;}
+.b-gray{background:#F3F4F6;color:#6B7280;}
+.b-blue{background:#DBEAFE;color:#1D4ED8;}
+.b-yellow{background:#FEF9C3;color:#A16207;}
+.b-orange{background:#FFEDD5;color:#C2410C;}
+.b-red{background:#FEE2E2;color:#DC2626;}
+.b-purple{background:#F5F3FF;color:#7C3AED;}
+
+/* ── ACTIONS ── */
+.actions{display:flex;gap:8px;}
+.ic-btn{width:30px;height:30px;border-radius:7px;border:none;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.ic-edit{background:#EFF6FF;color:#2643FF;}
+.ic-edit:hover{background:#DBEAFE;}
+.ic-del{background:#FEF2F2;color:#DC2626;}
+.ic-del:hover{background:#FEE2E2;}
+.ic-ok{background:#DCFCE7;color:#16A34A;}
+.ic-ok:hover{background:#BBF7D0;}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #F3F4F6;}
+.pagination span{font-size:13px;color:#6B7280;}
+.pg-btns{display:flex;gap:5px;}
+.pg{width:32px;height:32px;border-radius:7px;border:1px solid #E5E7EB;background:#fff;font-size:13px;color:#374151;display:flex;align-items:center;justify-content:center;}
+.pg.act{background:#2643FF;color:#fff;border-color:#2643FF;}
+.pg:hover:not(.act){background:#F9FAFB;}
+
+/* ── FORM ── */
+.form-card{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);padding:32px 36px;}
+.fsec{font-family:'Archivo',sans-serif;font-weight:600;font-size:17px;color:#1E2939;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid #F3F4F6;}
+.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+.fg label{font-weight:500;font-size:13px;color:#364153;}
+.fg label .req{color:#DC2626;}
+.fi-form{background:#F9FAFB;border:1px solid #D1D5DC;border-radius:10px;height:48px;padding:0 14px;font-size:14px;color:#1E2939;outline:none;width:100%;}
+.fi-form:focus{border-color:#2643FF;background:#fff;box-shadow:0 0 0 3px rgba(38,67,255,.1);}
+.fi-form::placeholder{color:#9CA3AF;}
+textarea.fi-form{height:80px;padding:12px 14px;resize:vertical;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-grid.g3{grid-template-columns:1fr 1fr 1fr;}
+.fg.full{grid-column:1/-1;}
+.hr{border:none;border-top:1px solid #F3F4F6;margin:24px 0;}
+.form-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:8px;}
+.radio-grp{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.radio-opt{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:13px;color:#374151;transition:all .12s;}
+.radio-opt input{accent-color:#2643FF;width:14px;height:14px;}
+.radio-opt:has(input:checked){border-color:#2643FF;background:#EFF6FF;color:#1D4ED8;}
+.hint{font-size:11px;color:#9CA3AF;margin-top:3px;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:#9CA3AF;margin-bottom:18px;}
+.breadcrumb a{color:#2643FF;cursor:pointer;}
+.info-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:12px 16px;font-size:13px;color:#1E40AF;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:#F3F4F6;border-radius:12px;padding:4px;width:fit-content;margin-bottom:20px;}
+.tab{padding:7px 18px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;color:#6B7280;transition:all .12s;}
+.tab.act{background:#fff;color:#2643FF;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.tab:hover:not(.act){color:#374151;}
+
+/* ── PROGRESS ── */
+.prog-wrap{width:90px;height:6px;background:#E5E7EB;border-radius:3px;display:inline-block;}
+.prog-fill{height:100%;border-radius:3px;background:#2643FF;}
+.prog-fill.g{background:#16A34A;}
+.prog-fill.y{background:#D97706;}
+.prog-fill.r{background:#DC2626;}
+
+/* ── DASHBOARD CHARTS ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px;}
+.chart-card{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 4px 6px rgba(0,0,0,.07);padding:24px;}
+.chart-title{font-family:'Archivo',sans-serif;font-weight:600;font-size:16px;color:#1E2939;margin-bottom:20px;}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:110px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:#2643FF;opacity:.85;transition:opacity .15s;}
+.bar:hover{opacity:1;}
+.bar-lbl{font-size:10px;color:#9CA3AF;text-align:center;}
+.bar-val{font-size:11px;font-weight:600;color:#2643FF;}
+.donut-area{display:flex;align-items:center;gap:24px;}
+.donut-legend{display:flex;flex-direction:column;gap:10px;}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#4A5565;}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* ── RECIBO PREVIEW ── */
+.recibo-layout{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;}
+.preview-card{background:#fff;border:1px solid #F3F4F6;border-radius:14px;box-shadow:0 4px 6px rgba(0,0,0,.07);overflow:hidden;position:sticky;top:22px;}
+.prev-header{background:#2643FF;padding:20px 22px;color:#fff;}
+.prev-header-lbl{font-size:11px;opacity:.8;letter-spacing:1px;text-transform:uppercase;}
+.prev-header-num{font-family:'Archivo',sans-serif;font-size:20px;font-weight:700;margin-top:3px;}
+.prev-body{padding:22px;}
+.prev-row{display:flex;justify-content:space-between;margin-bottom:12px;}
+.prev-key{font-size:12px;color:#6B7280;}
+.prev-val{font-size:13px;font-weight:600;color:#1E2939;}
+.prev-hr{border:none;border-top:1px dashed #E5E7EB;margin:14px 0;}
+.prev-total{display:flex;justify-content:space-between;padding:14px 22px;background:#F9FAFB;}
+.prev-total-lbl{font-size:14px;font-weight:600;color:#374151;}
+.prev-total-val{font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;color:#2643FF;}
+.prev-actions{padding:14px 22px;display:flex;gap:10px;}
+.prev-btn{flex:1;height:40px;border-radius:8px;border:none;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.prev-btn-p{background:#2643FF;color:#fff;}
+.prev-btn-s{background:#EFF6FF;color:#2643FF;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:32px;right:32px;background:#1E2939;color:#fff;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;display:none;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:slideUp .2s ease;}
+#toast.success{background:#16A34A;}
+#toast.error{background:#DC2626;}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:32px;width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Archivo',sans-serif;font-weight:700;font-size:20px;color:#1E2939;margin-bottom:10px;}
+.modal-body{font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:20px;}
+.modal-actions{display:flex;justify-content:flex-end;gap:12px;}
+
+/* ── DEMAND DETAIL MODAL ── */
+.modal-lg{width:660px;}
+.detail-section{margin-bottom:20px;}
+.detail-section-title{font-family:'Archivo',sans-serif;font-weight:600;font-size:14px;color:#364153;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #F3F4F6;}
+.detail-row{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;}
+.detail-key{font-size:13px;color:#9CA3AF;width:130px;flex-shrink:0;}
+.detail-val{font-size:13px;color:#1E2939;font-weight:500;}
+.subtask-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.subtask-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;background:#F9FAFB;border:1px solid #F3F4F6;}
+.subtask-item input[type=checkbox]{accent-color:#2643FF;width:16px;height:16px;flex-shrink:0;}
+.subtask-item label{font-size:13px;color:#374151;cursor:pointer;flex:1;}
+.subtask-item label.done{text-decoration:line-through;color:#9CA3AF;}
+.comment-box{width:100%;background:#F9FAFB;border:1px solid #D1D5DC;border-radius:10px;padding:10px 14px;font-size:13px;resize:vertical;min-height:70px;outline:none;}
+.comment-box:focus{border-color:#2643FF;background:#fff;}
+.comment-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:120px;overflow-y:auto;}
+.comment-item{background:#F0F4FF;border-radius:8px;padding:10px 14px;}
+.comment-meta{font-size:11px;color:#9CA3AF;margin-bottom:4px;}
+.comment-text{font-size:13px;color:#374151;}
+
+/* ── CHECKBOX SWITCH ── */
+.switch-wrap{display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;}
+.switch{position:relative;width:40px;height:22px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#D1D5DC;border-radius:22px;transition:.2s;}
+.slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+.switch input:checked+.slider{background:#2643FF;}
+.switch input:checked+.slider:before{transform:translateX(18px);}
+
+/* ── VINCULOS CHECKLIST ── */
+.vinculos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.vinculo-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .12s;}
+.vinculo-item:has(input:checked){border-color:#2643FF;background:#EFF6FF;}
+.vinculo-item input{accent-color:#2643FF;width:15px;height:15px;flex-shrink:0;}
+.vinculo-item label{font-size:13px;color:#374151;cursor:pointer;flex:1;}
+.vinculo-item .v-setor{font-size:11px;margin-top:2px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <p class="login-title">Login</p>
+    <label class="login-label">E-mail</label>
+    <input class="login-input" type="email" placeholder="exemplo@contage.com.br"/>
+    <label class="login-label">Senha</label>
+    <input class="login-input" type="password" placeholder="••••••••"/>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">Hub Accounting</div>
+      <div class="sidebar-logo-sub">SISTEMA DE GESTÃO CONTÁBIL</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="si active" data-page="dashboard" onclick="nav('dashboard')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor"/></svg>
+        Dashboard
+      </div>
+      <div class="si" data-page="empresas" onclick="nav('empresas')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><path d="M3 21V7a2 2 0 012-2h4V3h6v2h4a2 2 0 012 2v14H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><rect x="9" y="12" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+        Empresas
+      </div>
+      <div class="si" data-page="demandas" onclick="nav('demandas')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Demandas
+      </div>
+      <div class="si" data-page="recibos" onclick="nav('recibos')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v14a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" stroke="currentColor" stroke-width="2"/><path d="M4 9h16M8 9V4" stroke="currentColor" stroke-width="1.5"/></svg>
+        Recibos
+      </div>
+      <div class="si" data-page="recebimentos" onclick="nav('recebimentos')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.5 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Recebimentos
+      </div>
+      <div class="si" data-page="usuarios" onclick="nav('usuarios')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><circle cx="8" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M2 21c0-4 2.7-7 6-7h4c3.3 0 6 3 6 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 8v6M16 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Usuários
+      </div>
+      <div class="si" data-page="auditoria" onclick="nav('auditoria')">
+        <svg width="19" height="19" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h4M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2M9 4a2 2 0 012-2h2a2 2 0 012 2M9 4h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Auditoria
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sf-avatar">JS</div>
+      <div class="sf-info">
+        <div class="sf-name">João Silva</div>
+        <div class="sf-role">Administrador</div>
+      </div>
+      <button class="sf-logout" onclick="doLogout()" title="Sair">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M13 7V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h6a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- PAGES -->
+  <div id="main-content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="header-band">
+        <div class="header-left">
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Visão geral da operação</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding-top:46px;">
+          <span style="font-size:13px;color:#6B7280;">Competência:</span>
+          <select class="fi fi-w" style="height:38px;">
+            <option>Abril / 2026</option><option>Março / 2026</option><option>Fevereiro / 2026</option>
+          </select>
+        </div>
+      </div>
+      <div class="content">
+        <div class="stat-grid">
+          <div class="stat-card stat-blue"><div class="stat-label">Empresas Ativas</div><div class="stat-value">34</div><div class="stat-sub">↑ 2 este mês</div></div>
+          <div class="stat-card stat-green"><div class="stat-label">Demandas Concluídas</div><div class="stat-value">127</div><div class="stat-sub">de 160 geradas</div></div>
+          <div class="stat-card stat-yellow"><div class="stat-label">Demandas Pendentes</div><div class="stat-value">24</div><div class="stat-sub">8 com prazo hoje</div></div>
+          <div class="stat-card stat-red"><div class="stat-label">Em Atraso</div><div class="stat-value">9</div><div class="stat-sub">↑ 3 vs. mês anterior</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Demandas por Setor — Abr/2026</div>
+            <div class="bar-chart">
+              <div class="bar-wrap"><div class="bar-val">58</div><div class="bar" style="height:95px;"></div><div class="bar-lbl">Fiscal</div></div>
+              <div class="bar-wrap"><div class="bar-val">47</div><div class="bar" style="height:77px;opacity:.7;"></div><div class="bar-lbl">Pessoal</div></div>
+              <div class="bar-wrap"><div class="bar-val">32</div><div class="bar" style="height:52px;opacity:.55;"></div><div class="bar-lbl">Contábil</div></div>
+              <div class="bar-wrap"><div class="bar-val">23</div><div class="bar" style="height:38px;opacity:.4;"></div><div class="bar-lbl">Outros</div></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Recebimentos do Mês</div>
+            <div class="donut-area">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#E5E7EB" stroke-width="18"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#2643FF" stroke-width="18" stroke-dasharray="175 76" stroke-dashoffset="62" stroke-linecap="round"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#16A34A" stroke-width="18" stroke-dasharray="55 196" stroke-dashoffset="-113" stroke-linecap="round"/>
+                <text x="55" y="51" text-anchor="middle" font-size="12" font-weight="700" fill="#1E2939" font-family="Archivo,sans-serif">R$</text>
+                <text x="55" y="64" text-anchor="middle" font-size="10" fill="#6B7280">28,4k</text>
+              </svg>
+              <div class="donut-legend">
+                <div class="leg-item"><div class="leg-dot" style="background:#2643FF;"></div>Quitado — R$ 21.300</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#16A34A;"></div>Parcial — R$ 7.100</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#E5E7EB;"></div>Pendente — R$ 9.600</div>
+              </div>
+            </div>
+            <div style="margin-top:18px;display:flex;gap:14px;">
+              <button class="btn btn-primary btn-sm" onclick="nav('recibos')">Ver Recibos</button>
+              <button class="btn btn-secondary btn-sm" onclick="nav('recebimentos')">Ver Recebimentos</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:22px;padding:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <span style="font-family:'Archivo',sans-serif;font-weight:600;font-size:16px;color:#1E2939;">Demandas em Atraso</span>
+            <button class="btn btn-secondary btn-sm" onclick="nav('demandas')">Ver todas</button>
+          </div>
+          <table><thead><tr><th>Empresa</th><th>Demanda</th><th>Setor</th><th>Prazo</th><th>Atraso</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">Tech Solutions S/A</td><td>DCTF Mensal</td><td><span class="badge b-orange">Fiscal</span></td><td>05/04/2026</td><td><span class="badge b-red">4 dias</span></td></tr>
+            <tr><td class="fw">Padaria São João Ltda</td><td>Folha de Pagamento</td><td><span class="badge b-blue">Pessoal</span></td><td>07/04/2026</td><td><span class="badge b-red">2 dias</span></td></tr>
+            <tr><td class="fw">Mercearia do Bairro ME</td><td>Apuração Simples</td><td><span class="badge b-orange">Fiscal</span></td><td>08/04/2026</td><td><span class="badge b-yellow">1 dia</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMPRESAS ── -->
+    <div class="page" id="page-empresas">
+      <div class="header-band">
+        <div class="header-left"><h1 class="page-title">Empresas</h1><p class="page-subtitle">Gerenciar empresas atendidas pelo escritório</p></div>
+      </div>
+      <div class="content">
+        <div class="toolbar"><button class="btn btn-primary" onclick="nav('cadastro-empresa')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Nova Empresa</button></div>
+        <div class="filter-bar">
+          <input class="fi fi-grow" placeholder="🔍  Buscar por nome ou CNPJ..."/>
+          <select class="fi fi-w"><option>Todos os regimes</option><option>Simples Nacional</option><option>MEI</option><option>Lucro Presumido</option><option>Lucro Real</option></select>
+          <select class="fi fi-w"><option>Todos os status</option><option>Ativo</option><option>Inativo</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Empresa</th><th>CNPJ</th><th>Regime</th><th>Setor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">Tech Solutions S/A</td><td>12.345.678/0001-90</td><td>Lucro Presumido</td><td>Serviços</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-empresa')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Tech Solutions S/A')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Padaria São João Ltda</td><td>98.765.432/0001-11</td><td>Simples Nacional</td><td>Comércio</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-empresa')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Padaria São João Ltda')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Mercearia do Bairro ME</td><td>55.444.333/0001-22</td><td>MEI</td><td>Comércio</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-empresa')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Mercearia do Bairro ME')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Construtora Brasil Ltda</td><td>33.222.111/0001-44</td><td>Lucro Real</td><td>Construção</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-empresa')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Construtora Brasil Ltda')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Auto Peças Rápida ME</td><td>77.888.999/0001-55</td><td>Simples Nacional</td><td>Comércio</td><td><span class="badge b-gray">Inativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-empresa')" title="Editar">✏️</button><button class="ic-btn ic-ok" title="Reativar">↩️</button></td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 5 de 34 empresas</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CADASTRO EMPRESA ── -->
+    <div class="page" id="page-cadastro-empresa">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Nova Empresa</h1><p class="page-subtitle">Cadastrar empresa atendida</p></div></div>
+      <div class="content">
+        <div class="breadcrumb"><a onclick="nav('empresas')">Empresas</a><span>›</span><span>Nova Empresa</span></div>
+        <!-- Tabs -->
+        <div class="tabs" style="margin-bottom:22px;">
+          <div class="tab act" onclick="switchEmpresaTab(this,'empresa-tab-dados')">📋 Dados Cadastrais</div>
+          <div class="tab" onclick="switchEmpresaTab(this,'empresa-tab-vinculos')">🔗 Vínculos de Demanda</div>
+        </div>
+
+        <!-- Tab 1: Dados -->
+        <div id="empresa-tab-dados">
+          <div class="form-card">
+            <p class="fsec">🏢 Identificação</p>
+            <div class="form-grid">
+              <div class="fg"><label>Razão Social <span class="req">*</span></label><input class="fi-form" placeholder="Ex: Tech Solutions S/A"/></div>
+              <div class="fg"><label>Nome Fantasia</label><input class="fi-form" placeholder="Ex: TechSol"/></div>
+              <div class="fg"><label>CNPJ <span class="req">*</span></label><input class="fi-form" id="campo-cnpj" placeholder="00.000.000/0000-00" oninput="mascaraCNPJ(this)"/></div>
+              <div class="fg"><label>Regime Tributário <span class="req">*</span></label><select class="fi-form"><option value="">Selecionar...</option><option>Simples Nacional</option><option>MEI</option><option>Lucro Presumido</option><option>Lucro Real</option></select></div>
+              <div class="fg"><label>Porte</label><select class="fi-form"><option>ME — Microempresa</option><option>EPP — Pequeno Porte</option><option>Médio</option><option>Grande</option></select></div>
+              <div class="fg"><label>Setor Principal</label><select class="fi-form"><option>Comércio</option><option>Serviços</option><option>Indústria</option><option>Construção</option><option>Agronegócio</option></select></div>
+              <div class="fg"><label>Data de Início do Contrato</label><input class="fi-form" type="date"/></div>
+              <div class="fg"><label>Responsável Contábil</label><select class="fi-form"><option>Maria Santos</option><option>Ana Lima</option><option>Carlos Oliveira</option></select></div>
+              <div class="fg full"><label>Observações</label><textarea class="fi-form" placeholder="Informações adicionais relevantes..."></textarea></div>
+            </div>
+            <div class="hr"></div>
+            <p class="fsec">⚙️ Status</p>
+            <div class="fg" style="margin-bottom:0;"><label>Situação <span class="req">*</span></label><div class="radio-grp"><label class="radio-opt"><input type="radio" name="estatus" checked/> Ativa</label><label class="radio-opt"><input type="radio" name="estatus"/> Inativa</label></div></div>
+            <div class="hr"></div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" onclick="nav('empresas')">Cancelar</button>
+              <button class="btn btn-primary" onclick="switchEmpresaTabByName('empresa-tab-vinculos')">Próximo: Vínculos →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Vínculos -->
+        <div id="empresa-tab-vinculos" style="display:none;">
+          <div class="form-card">
+            <p class="fsec">🔗 Tipos de Demanda Vinculados</p>
+            <div class="info-box">ℹ️ Selecione quais tipos de demanda serão gerados mensalmente para esta empresa. Apenas os tipos habilitados aqui aparecerão nas competências (RF-014, RN-010).</div>
+            <div style="margin-bottom:18px;">
+              <p style="font-size:13px;font-weight:600;color:#364153;margin-bottom:10px;">🧾 Setor Pessoal</p>
+              <div class="vinculos-grid">
+                <label class="vinculo-item"><input type="checkbox" checked/><div><label>Folha de Pagamento</label><div class="v-setor badge b-blue" style="display:inline-flex;margin-top:4px;">Pessoal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox" checked/><div><label>FGTS Mensal</label><div class="v-setor badge b-blue" style="display:inline-flex;margin-top:4px;">Pessoal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>e-Social Mensal</label><div class="v-setor badge b-blue" style="display:inline-flex;margin-top:4px;">Pessoal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>RAIS Anual</label><div class="v-setor badge b-blue" style="display:inline-flex;margin-top:4px;">Pessoal</div></div></label>
+              </div>
+            </div>
+            <div style="margin-bottom:18px;">
+              <p style="font-size:13px;font-weight:600;color:#364153;margin-bottom:10px;">📊 Setor Fiscal</p>
+              <div class="vinculos-grid">
+                <label class="vinculo-item"><input type="checkbox" checked/><div><label>Apuração Simples Nacional</label><div class="v-setor badge b-orange" style="display:inline-flex;margin-top:4px;">Fiscal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>DCTF Mensal</label><div class="v-setor badge b-orange" style="display:inline-flex;margin-top:4px;">Fiscal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>EFD-Contribuições</label><div class="v-setor badge b-orange" style="display:inline-flex;margin-top:4px;">Fiscal</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>DIRF Anual</label><div class="v-setor badge b-orange" style="display:inline-flex;margin-top:4px;">Fiscal</div></div></label>
+              </div>
+            </div>
+            <div style="margin-bottom:18px;">
+              <p style="font-size:13px;font-weight:600;color:#364153;margin-bottom:10px;">📒 Setor Contábil</p>
+              <div class="vinculos-grid">
+                <label class="vinculo-item"><input type="checkbox" checked/><div><label>Balancete Mensal</label><div class="v-setor badge b-purple" style="display:inline-flex;margin-top:4px;">Contábil</div></div></label>
+                <label class="vinculo-item"><input type="checkbox"/><div><label>Balanço Anual</label><div class="v-setor badge b-purple" style="display:inline-flex;margin-top:4px;">Contábil</div></div></label>
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" onclick="nav('empresas')">Cancelar</button>
+              <button class="btn btn-secondary" onclick="switchEmpresaTabByName('empresa-tab-dados')">← Voltar</button>
+              <button class="btn btn-primary" onclick="save('empresas','Empresa cadastrada com sucesso!')">Salvar Empresa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMANDAS ── -->
+    <div class="page" id="page-demandas">
+      <div class="header-band">
+        <div class="header-left"><h1 class="page-title">Demandas</h1><p class="page-subtitle">Gerenciar demandas por competência</p></div>
+      </div>
+      <div class="content">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="tabs">
+              <div class="tab act" onclick="switchTab(this,'tab-demandas')">Lista</div>
+              <div class="tab" onclick="switchTab(this,'tab-tipos')">Tipos de Demanda</div>
+            </div>
+          </div>
+        </div>
+        <div id="tab-demandas">
+          <div class="filter-bar">
+            <input class="fi" type="month" value="2026-04" style="width:170px;"/>
+            <select class="fi fi-w"><option>Todos os setores</option><option>Pessoal</option><option>Fiscal</option><option>Contábil</option></select>
+            <select class="fi fi-w"><option>Todos os status</option><option>Pendente</option><option>Em Andamento</option><option>Concluída</option><option>Atrasada</option></select>
+            <button class="btn btn-primary btn-sm">Filtrar</button>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">160</div></div>
+            <div class="stat-card stat-green"><div class="stat-label">Concluídas</div><div class="stat-value">127</div></div>
+            <div class="stat-card stat-yellow"><div class="stat-label">Em Andamento</div><div class="stat-value">24</div></div>
+            <div class="stat-card stat-red"><div class="stat-label">Atrasadas</div><div class="stat-value">9</div></div>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Empresa</th><th>Tipo de Demanda</th><th>Setor</th><th>Status</th><th>Prazo</th><th>Progresso</th></tr></thead>
+            <tbody>
+              <tr style="cursor:pointer;" onclick="openDemandaDetail('Tech Solutions S/A','DCTF Mensal','Fiscal','Atrasada','05/04/2026',45)"><td class="fw">Tech Solutions S/A</td><td>DCTF Mensal</td><td><span class="badge b-orange">Fiscal</span></td><td><span class="badge b-red">Atrasada</span></td><td>05/04/2026</td><td><div class="prog-wrap"><div class="prog-fill r" style="width:45%"></div></div></td></tr>
+              <tr style="cursor:pointer;" onclick="openDemandaDetail('Padaria São João Ltda','Folha de Pagamento','Pessoal','Em Andamento','15/04/2026',70)"><td class="fw">Padaria São João Ltda</td><td>Folha de Pagamento</td><td><span class="badge b-blue">Pessoal</span></td><td><span class="badge b-yellow">Em Andamento</span></td><td>15/04/2026</td><td><div class="prog-wrap"><div class="prog-fill y" style="width:70%"></div></div></td></tr>
+              <tr style="cursor:pointer;" onclick="openDemandaDetail('Mercearia do Bairro ME','Apuração Simples','Fiscal','Concluída','10/04/2026',100)"><td class="fw">Mercearia do Bairro ME</td><td>Apuração Simples</td><td><span class="badge b-orange">Fiscal</span></td><td><span class="badge b-green">Concluída</span></td><td>10/04/2026</td><td><div class="prog-wrap"><div class="prog-fill g" style="width:100%"></div></div></td></tr>
+              <tr style="cursor:pointer;" onclick="openDemandaDetail('Construtora Brasil Ltda','Balancete Mensal','Contábil','Concluída','20/04/2026',100)"><td class="fw">Construtora Brasil Ltda</td><td>Balancete Mensal</td><td><span class="badge b-purple">Contábil</span></td><td><span class="badge b-green">Concluída</span></td><td>20/04/2026</td><td><div class="prog-wrap"><div class="prog-fill g" style="width:100%"></div></div></td></tr>
+              <tr style="cursor:pointer;" onclick="openDemandaDetail('Tech Solutions S/A','Folha de Pagamento','Pessoal','Pendente','15/04/2026',0)"><td class="fw">Tech Solutions S/A</td><td>Folha de Pagamento</td><td><span class="badge b-blue">Pessoal</span></td><td><span class="badge b-gray">Pendente</span></td><td>15/04/2026</td><td><div class="prog-wrap"><div class="prog-fill" style="width:0%"></div></div></td></tr>
+            </tbody></table>
+            <div class="pagination"><span>Mostrando 5 de 160 demandas</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">›</button></div></div>
+          </div>
+        </div>
+        <div id="tab-tipos" style="display:none;">
+          <div class="toolbar"><button class="btn btn-primary" onclick="nav('tipos-demanda')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Novo Tipo</button></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Nome</th><th>Setor</th><th>Subtarefas</th><th>Empresas</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody>
+              <tr><td class="fw">Folha de Pagamento</td><td><span class="badge b-blue">Pessoal</span></td><td>Cálculo · Homologação · eSocial</td><td>18</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+              <tr><td class="fw">DCTF Mensal</td><td><span class="badge b-orange">Fiscal</span></td><td>Apuração · Transmissão</td><td>24</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+              <tr><td class="fw">Simples Nacional</td><td><span class="badge b-orange">Fiscal</span></td><td>DAS</td><td>31</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+              <tr><td class="fw">Balancete Mensal</td><td><span class="badge b-purple">Contábil</span></td><td>—</td><td>12</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RECIBOS ── -->
+    <div class="page" id="page-recibos">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Recibos</h1><p class="page-subtitle">Honorários de serviços contábeis</p></div></div>
+      <div class="content">
+        <div class="toolbar"><button class="btn btn-primary" onclick="nav('emitir-recibo')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Emitir Recibo</button></div>
+        <div class="filter-bar">
+          <input class="fi fi-grow" placeholder="🔍  Buscar por empresa ou nº do recibo..."/>
+          <input class="fi" type="month" value="2026-04" style="width:160px;"/>
+          <select class="fi fi-w"><option>Todos os status</option><option>Pendente</option><option>Parcial</option><option>Quitado</option><option>Cancelado</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Nº Recibo</th><th>Empresa</th><th>Competência</th><th>Emissão</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">REC-2026-047</td><td>Tech Solutions S/A</td><td>Abr/2026</td><td>09/04/2026</td><td>R$ 2.800,00</td><td><span class="badge b-yellow">Pendente</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('registrar-recebimento')" title="Registrar pagamento">💰</button><button class="ic-btn ic-ok" title="2ª via">📄</button><button class="ic-btn ic-del" onclick="showModal('cancelar','REC-2026-047')" title="Cancelar">✕</button></td></tr>
+            <tr><td class="fw">REC-2026-046</td><td>Padaria São João Ltda</td><td>Abr/2026</td><td>08/04/2026</td><td>R$ 1.200,00</td><td><span class="badge b-orange">Parcial</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('registrar-recebimento')" title="Registrar pagamento">💰</button><button class="ic-btn ic-ok" title="2ª via">📄</button><button class="ic-btn ic-del" onclick="showModal('cancelar','REC-2026-046')" title="Cancelar">✕</button></td></tr>
+            <tr><td class="fw">REC-2026-045</td><td>Mercearia do Bairro ME</td><td>Abr/2026</td><td>07/04/2026</td><td>R$ 850,00</td><td><span class="badge b-green">Quitado</span></td><td class="actions"><button class="ic-btn ic-ok" title="2ª via">📄</button></td></tr>
+            <tr><td class="fw">REC-2026-044</td><td>Construtora Brasil Ltda</td><td>Mar/2026</td><td>31/03/2026</td><td>R$ 4.500,00</td><td><span class="badge b-green">Quitado</span></td><td class="actions"><button class="ic-btn ic-ok" title="2ª via">📄</button></td></tr>
+            <tr><td class="fw">REC-2026-039</td><td>Construtora Brasil Ltda</td><td>Mar/2026</td><td>25/03/2026</td><td>R$ 4.500,00</td><td><span class="badge b-gray">Cancelado</span></td><td class="actions"><button class="ic-btn ic-edit" title="Ver motivo">ℹ️</button></td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 5 de 47 recibos</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMITIR RECIBO ── -->
+    <div class="page" id="page-emitir-recibo">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Emitir Recibo</h1><p class="page-subtitle">Honorários de serviços contábeis</p></div></div>
+      <div class="content">
+        <div class="breadcrumb"><a onclick="nav('recibos')">Recibos</a><span>›</span><span>Emitir Novo Recibo</span></div>
+        <div class="recibo-layout">
+          <div class="form-card">
+            <p class="fsec">📄 Dados do Recibo</p>
+            <div class="fg"><label>Número do Recibo</label><input class="fi-form" value="REC-2026-048" readonly style="background:#F3F4F6;color:#6B7280;"/><span class="hint">✓ Numeração sequencial automática por escritório/ano (RN-005)</span></div>
+            <div class="form-grid">
+              <div class="fg"><label>Empresa <span class="req">*</span></label><select class="fi-form"><option value="">Selecionar empresa...</option><option>Tech Solutions S/A</option><option>Padaria São João Ltda</option><option>Mercearia do Bairro ME</option><option>Construtora Brasil Ltda</option></select></div>
+              <div class="fg"><label>Competência <span class="req">*</span></label><input class="fi-form" type="month" value="2026-04"/></div>
+              <div class="fg"><label>Data de Emissão <span class="req">*</span></label><input class="fi-form" type="date" value="2026-04-09"/></div>
+              <div class="fg"><label>Data de Vencimento <span class="req">*</span></label><input class="fi-form" type="date" value="2026-04-20"/></div>
+              <div class="fg full"><label>Valor dos Honorários (R$) <span class="req">*</span></label><input class="fi-form" type="text" placeholder="0,00" id="recibo-valor" oninput="updatePreview()"/></div>
+              <div class="fg full"><label>Descrição dos Serviços</label><textarea class="fi-form" placeholder="Ex: Honorários referentes a serviços de contabilidade, DP e Fiscal — Competência Abril/2026."></textarea></div>
+            </div>
+            <div class="hr"></div>
+            <p class="fsec">💳 Forma de Pagamento</p>
+            <div class="form-grid">
+              <div class="fg"><label>Forma <span class="req">*</span></label><select class="fi-form"><option value="">Selecionar...</option><option>PIX</option><option>Dinheiro</option><option>Transferência Bancária</option><option>Outro</option></select></div>
+              <div class="fg"><label>Chave / Dados</label><input class="fi-form" placeholder="Ex: contage@escritorio.com.br"/></div>
+            </div>
+            <div class="hr"></div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" onclick="nav('recibos')">Cancelar</button>
+              <button class="btn btn-primary" onclick="save('recibos','Recibo emitido com sucesso!')">Emitir Recibo</button>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="prev-header"><div class="prev-header-lbl">Pré-visualização</div><div class="prev-header-num">REC-2026-048</div></div>
+            <div class="prev-body">
+              <div class="prev-row"><span class="prev-key">Empresa</span><span class="prev-val">— selecionar —</span></div>
+              <div class="prev-row"><span class="prev-key">Competência</span><span class="prev-val">Abril / 2026</span></div>
+              <div class="prev-row"><span class="prev-key">Emissão</span><span class="prev-val">09/04/2026</span></div>
+              <div class="prev-row"><span class="prev-key">Vencimento</span><span class="prev-val">20/04/2026</span></div>
+              <div class="prev-hr"></div>
+            </div>
+            <div class="prev-total"><span class="prev-total-lbl">Total</span><span class="prev-total-val" id="prev-valor">R$ 0,00</span></div>
+            <div class="prev-actions">
+              <button class="prev-btn prev-btn-s">⬇ PDF</button>
+              <button class="prev-btn prev-btn-p">↗ Compartilhar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RECEBIMENTOS ── -->
+    <div class="page" id="page-recebimentos">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Recebimentos</h1><p class="page-subtitle">Controle de pagamentos recebidos</p></div></div>
+      <div class="content">
+        <div class="toolbar"><button class="btn btn-primary" onclick="nav('registrar-recebimento')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Registrar Recebimento</button></div>
+        <div class="stat-grid">
+          <div class="stat-card stat-blue"><div class="stat-label">Total Recebido no Mês</div><div class="stat-value">R$ 21.300</div></div>
+          <div class="stat-card stat-yellow"><div class="stat-label">Pagamentos Parciais</div><div class="stat-value">R$ 7.100</div></div>
+          <div class="stat-card stat-red"><div class="stat-label">Em Aberto</div><div class="stat-value">R$ 9.600</div></div>
+          <div class="stat-card stat-green"><div class="stat-label">Recibos Quitados</div><div class="stat-value">18</div></div>
+        </div>
+        <div class="filter-bar">
+          <input class="fi fi-grow" placeholder="🔍  Buscar por empresa ou recibo..."/>
+          <input class="fi" type="date" value="2026-04-01" style="width:150px;"/>
+          <input class="fi" type="date" value="2026-04-30" style="width:150px;"/>
+          <select class="fi fi-w"><option>Todas as formas</option><option>PIX</option><option>Dinheiro</option><option>Transferência</option><option>Outro</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Nº Recibo</th><th>Empresa</th><th>Data Pagamento</th><th>Valor Pago</th><th>Forma</th><th>Situação</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">REC-2026-045</td><td>Mercearia do Bairro ME</td><td>07/04/2026</td><td>R$ 850,00</td><td><span class="badge b-blue">PIX</span></td><td><span class="badge b-green">Quitado</span></td><td class="actions"><button class="ic-btn ic-ok" title="Ver comprovante">📄</button></td></tr>
+            <tr><td class="fw">REC-2026-046</td><td>Padaria São João Ltda</td><td>08/04/2026</td><td>R$ 600,00</td><td><span class="badge b-green">Dinheiro</span></td><td><span class="badge b-orange">Parcial</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('registrar-recebimento')" title="Completar pagamento">💰</button></td></tr>
+            <tr><td class="fw">REC-2026-044</td><td>Construtora Brasil Ltda</td><td>02/04/2026</td><td>R$ 4.500,00</td><td><span class="badge b-purple">Transferência</span></td><td><span class="badge b-green">Quitado</span></td><td class="actions"><button class="ic-btn ic-ok" title="Ver comprovante">📄</button></td></tr>
+            <tr><td class="fw">REC-2026-043</td><td>Tech Solutions S/A</td><td>28/03/2026</td><td>R$ 2.800,00</td><td><span class="badge b-blue">PIX</span></td><td><span class="badge b-green">Quitado</span></td><td class="actions"><button class="ic-btn ic-ok" title="Ver comprovante">📄</button></td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 4 de 38 recebimentos</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REGISTRAR RECEBIMENTO ── -->
+    <div class="page" id="page-registrar-recebimento">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Registrar Recebimento</h1><p class="page-subtitle">Lançar pagamento vinculado a recibo</p></div></div>
+      <div class="content">
+        <div class="breadcrumb"><a onclick="nav('recebimentos')">Recebimentos</a><span>›</span><span>Novo Lançamento</span></div>
+        <div class="form-card" style="max-width:760px;">
+          <p class="fsec">🔗 Vínculo com Recibo</p>
+          <div class="info-box">ℹ️ Todo recebimento deve estar vinculado a um recibo válido. A soma dos recebimentos não pode exceder o valor do recibo (RN-007).</div>
+          <div class="form-grid">
+            <div class="fg"><label>Recibo <span class="req">*</span></label><select class="fi-form"><option value="">Selecionar recibo...</option><option>REC-2026-047 — Tech Solutions S/A — R$ 2.800,00</option><option>REC-2026-046 — Padaria São João — R$ 1.200,00 (parcial)</option></select></div>
+            <div class="fg"><label>Saldo em Aberto</label><input class="fi-form" value="R$ 2.800,00" readonly style="background:#F3F4F6;color:#6B7280;"/></div>
+          </div>
+          <div class="hr"></div>
+          <p class="fsec">💵 Dados do Pagamento</p>
+          <div class="form-grid">
+            <div class="fg"><label>Data do Recebimento <span class="req">*</span></label><input class="fi-form" type="date" value="2026-04-09"/></div>
+            <div class="fg"><label>Valor Recebido (R$) <span class="req">*</span></label><input class="fi-form" type="text" placeholder="0,00"/></div>
+            <div class="fg"><label>Forma de Pagamento <span class="req">*</span></label><select class="fi-form" id="forma-pag" onchange="toggleOutro()"><option value="">Selecionar...</option><option>PIX</option><option>Dinheiro</option><option>Transferência Bancária</option><option value="outro">Outro</option></select></div>
+            <div class="fg" id="outro-desc" style="display:none;"><label>Descrição da forma <span class="req">*</span></label><input class="fi-form" placeholder="Descreva a forma de pagamento..."/></div>
+            <div class="fg full"><label>Observações</label><textarea class="fi-form" placeholder="Informações adicionais..."></textarea></div>
+          </div>
+          <div class="hr"></div>
+          <div class="form-actions">
+            <button class="btn btn-secondary" onclick="nav('recebimentos')">Cancelar</button>
+            <button class="btn btn-primary" onclick="save('recebimentos','Recebimento registrado com sucesso!')">Registrar Pagamento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── USUÁRIOS ── -->
+    <div class="page" id="page-usuarios">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Usuários</h1><p class="page-subtitle">Gerenciar usuários do escritório</p></div></div>
+      <div class="content">
+        <div class="toolbar"><button class="btn btn-primary" onclick="nav('cadastro-usuario')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Novo Usuário</button></div>
+        <div class="filter-bar">
+          <input class="fi fi-grow" placeholder="🔍  Buscar por nome ou e-mail..."/>
+          <select class="fi fi-w"><option>Todos os perfis</option><option>Administrador</option><option>Colaborador — Pessoal</option><option>Colaborador — Fiscal</option><option>Colaborador — Contábil + Fiscal</option></select>
+          <select class="fi fi-w"><option>Todos os status</option><option>Ativo</option><option>Inativo</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil / Setor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">João Silva</td><td>joao.silva@contage.com.br</td><td><span class="badge b-purple">Administrador</span></td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-usuario')" title="Editar">✏️</button></td></tr>
+            <tr><td class="fw">Maria Santos</td><td>maria.santos@contage.com.br</td><td><span class="badge b-orange">Colaborador — Pessoal</span></td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-usuario')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Maria Santos')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Carlos Oliveira</td><td>carlos.oliveira@contage.com.br</td><td><span class="badge b-green">Colaborador — Fiscal</span></td><td><span class="badge b-gray">Inativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-usuario')" title="Editar">✏️</button><button class="ic-btn ic-ok" title="Reativar">↩️</button></td></tr>
+            <tr><td class="fw">Ana Lima</td><td>ana.lima@contage.com.br</td><td><span class="badge b-blue">Colaborador — Contábil + Fiscal</span></td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-usuario')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Ana Lima')" title="Inativar">🚫</button></td></tr>
+            <tr><td class="fw">Roberto Melo</td><td>roberto.melo@contage.com.br</td><td><span class="badge b-orange">Colaborador — Pessoal</span></td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit" onclick="nav('cadastro-usuario')" title="Editar">✏️</button><button class="ic-btn ic-del" onclick="showModal('inativar','Roberto Melo')" title="Inativar">🚫</button></td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 5 de 12 usuários</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CADASTRO USUÁRIO ── -->
+    <div class="page" id="page-cadastro-usuario">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Novo Usuário</h1><p class="page-subtitle">Cadastrar usuário no escritório</p></div></div>
+      <div class="content">
+        <div class="breadcrumb"><a onclick="nav('usuarios')">Usuários</a><span>›</span><span>Novo Usuário</span></div>
+        <div class="form-card" style="max-width:800px;">
+          <p class="fsec">📋 Dados do Usuário</p>
+          <div class="form-grid">
+            <div class="fg"><label>Nome completo <span class="req">*</span></label><input class="fi-form" placeholder="Ex: Maria Santos"/></div>
+            <div class="fg"><label>E-mail / Identificador <span class="req">*</span></label><input class="fi-form" type="email" placeholder="Ex: maria@contage.com.br"/></div>
+            <div class="fg"><label>Senha <span class="req">*</span></label><input class="fi-form" type="password" placeholder="Mínimo 8 caracteres"/><span class="hint">Use letras maiúsculas, minúsculas e números.</span></div>
+            <div class="fg"><label>Confirmar senha <span class="req">*</span></label><input class="fi-form" type="password" placeholder="Repita a senha"/></div>
+          </div>
+          <div class="hr"></div>
+          <p class="fsec">🔐 Perfil de Acesso</p>
+          <div class="info-box">ℹ️ O perfil define quais módulos e empresas o colaborador pode visualizar e operar (RN-002).</div>
+          <div class="fg" style="margin-bottom:20px;"><label>Tipo de perfil <span class="req">*</span></label><div class="radio-grp"><label class="radio-opt"><input type="radio" name="uperfil" checked/> Administrador</label><label class="radio-opt"><input type="radio" name="uperfil"/> Colaborador — Pessoal</label><label class="radio-opt"><input type="radio" name="uperfil"/> Colaborador — Fiscal</label><label class="radio-opt"><input type="radio" name="uperfil"/> Colaborador — Contábil + Fiscal</label></div></div>
+          <div class="fg"><label>Status inicial</label><select class="fi-form" style="max-width:240px;"><option>Ativo</option><option>Inativo</option></select></div>
+          <div class="hr"></div>
+          <div class="form-actions"><button class="btn btn-secondary" onclick="nav('usuarios')">Cancelar</button><button class="btn btn-primary" onclick="save('usuarios','Usuário cadastrado com sucesso!')">Salvar Usuário</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TIPOS DE DEMANDA ── -->
+    <div class="page" id="page-tipos-demanda">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Tipos de Demanda</h1><p class="page-subtitle">Catálogo de obrigações e rotinas por setor</p></div></div>
+      <div class="content">
+        <div class="toolbar"><button class="btn btn-secondary" onclick="nav('demandas')">← Voltar</button><button class="btn btn-primary"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Novo Tipo</button></div>
+        <div class="tabs"><div class="tab act">Todos</div><div class="tab">Pessoal</div><div class="tab">Fiscal</div><div class="tab">Contábil</div></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Nome</th><th>Setor</th><th>Subtarefas</th><th>Empresas Vinculadas</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td class="fw">Folha de Pagamento</td><td><span class="badge b-blue">Pessoal</span></td><td>Cálculo · Homologação · Envio eSocial</td><td>18</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            <tr><td class="fw">FGTS Mensal</td><td><span class="badge b-blue">Pessoal</span></td><td>GFIP · SEFIP</td><td>18</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            <tr><td class="fw">DCTF Mensal</td><td><span class="badge b-orange">Fiscal</span></td><td>Apuração PIS/COFINS · Transmissão</td><td>24</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            <tr><td class="fw">Apuração Simples Nacional</td><td><span class="badge b-orange">Fiscal</span></td><td>DAS</td><td>31</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            <tr><td class="fw">Balancete Mensal</td><td><span class="badge b-purple">Contábil</span></td><td>—</td><td>12</td><td><span class="badge b-green">Ativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-del">🚫</button></td></tr>
+            <tr><td class="fw">DIRF Anual</td><td><span class="badge b-orange">Fiscal</span></td><td>Consolidação · Transmissão</td><td>18</td><td><span class="badge b-gray">Inativo</span></td><td class="actions"><button class="ic-btn ic-edit">✏️</button><button class="ic-btn ic-ok">↩️</button></td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 6 de 14 tipos</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AUDITORIA ── -->
+    <div class="page" id="page-auditoria">
+      <div class="header-band"><div class="header-left"><h1 class="page-title">Logs de Auditoria</h1><p class="page-subtitle">Rastreabilidade de ações críticas do sistema</p></div></div>
+      <div class="content">
+        <div class="stat-grid">
+          <div class="stat-card stat-blue"><div class="stat-label">Eventos hoje</div><div class="stat-value">47</div></div>
+          <div class="stat-card"><div class="stat-label">Logins (24h)</div><div class="stat-value">12</div></div>
+          <div class="stat-card stat-yellow"><div class="stat-label">Alterações críticas</div><div class="stat-value">8</div></div>
+          <div class="stat-card stat-red"><div class="stat-label">Falhas de login</div><div class="stat-value">3</div></div>
+        </div>
+        <div class="filter-bar">
+          <input class="fi fi-grow" placeholder="🔍  Buscar por usuário, ação ou entidade..."/>
+          <input class="fi" type="date" value="2026-04-01" style="width:150px;"/>
+          <input class="fi" type="date" value="2026-04-09" style="width:150px;"/>
+          <select class="fi fi-w"><option>Todos os tipos</option><option>Autenticação</option><option>Criação</option><option>Edição</option><option>Cancelamento</option><option>Exportação</option></select>
+          <button class="btn btn-secondary btn-sm" style="height:44px;">⬇ Exportar CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Data / Hora</th><th>Usuário</th><th>Tipo de Evento</th><th>Ação</th><th>Entidade</th><th>IP</th></tr></thead>
+          <tbody>
+            <tr><td>09/04/2026 14:32</td><td>João Silva</td><td><span class="badge b-green">Recibo Emitido</span></td><td>Emitiu REC-2026-046</td><td>Tech Solutions S/A</td><td>187.24.110.33</td></tr>
+            <tr><td>09/04/2026 13:15</td><td>Maria Santos</td><td><span class="badge b-blue">Edição</span></td><td>Status demanda → Concluída</td><td>Padaria São João — Folha Abr/26</td><td>187.24.110.41</td></tr>
+            <tr><td>09/04/2026 11:48</td><td>João Silva</td><td><span class="badge b-green">Criação</span></td><td>Cadastrou nova empresa</td><td>Mercearia do Bairro ME</td><td>187.24.110.33</td></tr>
+            <tr><td>09/04/2026 10:05</td><td>Carlos Oliveira</td><td><span class="badge b-purple">Login</span></td><td>Autenticação com sucesso</td><td>Sistema</td><td>177.92.55.12</td></tr>
+            <tr><td>09/04/2026 09:50</td><td>João Silva</td><td><span class="badge b-red">Cancelamento</span></td><td>Cancelou REC-2026-039 — "Duplicidade"</td><td>Construtora Brasil Ltda</td><td>187.24.110.33</td></tr>
+            <tr><td>09/04/2026 09:12</td><td>Ana Lima</td><td><span class="badge b-purple">Exportação</span></td><td>Exportou demandas CSV Mar/2026</td><td>Todas as empresas</td><td>201.45.88.9</td></tr>
+            <tr><td>08/04/2026 17:44</td><td>João Silva</td><td><span class="badge b-green">Criação</span></td><td>Criou usuário roberto.melo</td><td>Roberto Melo</td><td>187.24.110.33</td></tr>
+          </tbody></table>
+          <div class="pagination"><span>Mostrando 7 de 124 eventos — Retenção: 5 anos (RNF-010)</span><div class="pg-btns"><button class="pg">‹</button><button class="pg act">1</button><button class="pg">2</button><button class="pg">…</button><button class="pg">18</button><button class="pg">›</button></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODAL GENÉRICO (inativar, etc.) -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Confirmar ação</div>
+    <div class="modal-body" id="modal-body">Tem certeza?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-danger" id="modal-confirm-btn" onclick="confirmModal()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CANCELAR RECIBO (com campo de motivo) -->
+<div class="modal-overlay" id="modal-cancelar">
+  <div class="modal">
+    <div class="modal-title">Cancelar Recibo</div>
+    <div class="modal-body" id="modal-cancelar-body">Informe o motivo do cancelamento. O recibo cancelado não valerá como comprovante (RN-006).</div>
+    <div class="fg" style="margin-bottom:20px;">
+      <label style="font-weight:500;font-size:13px;color:#364153;display:block;margin-bottom:7px;">Motivo do cancelamento <span style="color:#DC2626;">*</span></label>
+      <textarea id="motivo-cancelamento" class="comment-box" placeholder="Ex: Recibo emitido em duplicidade, valor incorreto..." style="min-height:90px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal-cancelar').classList.remove('open')">Voltar</button>
+      <button class="btn btn-danger" onclick="confirmarCancelamento()">Cancelar Recibo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE DA DEMANDA -->
+<div class="modal-overlay" id="modal-demanda">
+  <div class="modal modal-lg">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div>
+        <div class="modal-title" id="dd-title" style="margin-bottom:4px;"></div>
+        <div id="dd-meta" style="display:flex;gap:8px;"></div>
+      </div>
+      <button style="border:none;background:none;font-size:20px;color:#9CA3AF;cursor:pointer;padding:4px;" onclick="document.getElementById('modal-demanda').classList.remove('open')">✕</button>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Informações</div>
+      <div class="detail-row"><span class="detail-key">Empresa</span><span class="detail-val" id="dd-empresa"></span></div>
+      <div class="detail-row"><span class="detail-key">Competência</span><span class="detail-val">Abril / 2026</span></div>
+      <div class="detail-row"><span class="detail-key">Prazo</span><span class="detail-val" id="dd-prazo"></span></div>
+      <div class="detail-row"><span class="detail-key">Progresso</span>
+        <span class="detail-val">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="prog-wrap" style="width:120px;"><div class="prog-fill" id="dd-prog-fill" style="width:0%"></div></div>
+            <span id="dd-prog-pct" style="font-size:13px;font-weight:600;color:#2643FF;"></span>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Subtarefas</div>
+      <ul class="subtask-list" id="dd-subtasks"></ul>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Observações</div>
+      <div class="comment-list" id="dd-comments">
+        <div class="comment-item"><div class="comment-meta">Maria Santos · 08/04/2026 às 14:22</div><div class="comment-text">Aguardando retorno do cliente para validar os dados antes de transmitir.</div></div>
+      </div>
+      <textarea class="comment-box" placeholder="Adicionar observação..." id="dd-nova-obs"></textarea>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
+      <div>
+        <label style="font-size:13px;font-weight:500;color:#364153;margin-right:10px;">Atualizar Status:</label>
+        <select class="fi" style="height:36px;font-size:13px;" id="dd-status-sel">
+          <option>Pendente</option><option>Em Andamento</option><option>Concluída</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('modal-demanda').classList.remove('open')">Fechar</button>
+        <button class="btn btn-primary btn-sm" onclick="salvarDemanda()">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── NAVIGATION ──
+function nav(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + pageId);
+  if (pg) { pg.classList.add('active'); document.getElementById('main-content').scrollTop = 0; }
+  document.querySelectorAll('.si').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.page === pageId) item.classList.add('active');
+  });
+  const parentMap = { 'cadastro-empresa':'empresas','emitir-recibo':'recibos','registrar-recebimento':'recebimentos','cadastro-usuario':'usuarios','tipos-demanda':'demandas' };
+  if (parentMap[pageId]) {
+    document.querySelectorAll('.si').forEach(item => { if (item.dataset.page === parentMap[pageId]) item.classList.add('active'); });
+  }
+}
+
+// ── LOGIN / LOGOUT ──
+function doLogin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-layout').style.display = 'flex';
+  nav('dashboard');
+}
+function doLogout() {
+  document.getElementById('app-layout').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+// Enter key no login
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.login-input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  });
+});
+
+// ── TOAST ──
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='success'?'✓  ':type==='error'?'✕  ':'ℹ  ') + msg;
+  t.className = type; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3200);
+}
+
+// ── SAVE ──
+function save(goTo, msg) { nav(goTo); setTimeout(() => toast(msg), 180); }
+
+// ── MODAL GENÉRICO ──
+let _modalAction = null;
+function showModal(type, name) {
+  if (type === 'cancelar') { openCancelarModal(name); return; }
+  const configs = {
+    inativar: { title:'Inativar registro', body:`Deseja inativar <strong>${name}</strong>? O histórico será preservado (RN-003).`, btn:'Inativar' },
+  };
+  const c = configs[type] || { title:'Confirmar', body:'Tem certeza?', btn:'Confirmar' };
+  document.getElementById('modal-title').textContent = c.title;
+  document.getElementById('modal-body').innerHTML = c.body;
+  document.getElementById('modal-confirm-btn').textContent = c.btn;
+  document.getElementById('modal').classList.add('open');
+  _modalAction = type;
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function confirmModal() {
+  closeModal();
+  const msgs = { inativar:'Registro inativado com sucesso.' };
+  toast(msgs[_modalAction] || 'Ação realizada.');
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+// ── MODAL CANCELAR RECIBO ──
+let _reciboParaCancelar = null;
+function openCancelarModal(nomeRecibo) {
+  _reciboParaCancelar = nomeRecibo;
+  document.getElementById('modal-cancelar-body').innerHTML = `Informe o motivo do cancelamento do recibo <strong>${nomeRecibo}</strong>. O recibo cancelado não valerá como comprovante (RN-006).`;
+  document.getElementById('motivo-cancelamento').value = '';
+  document.getElementById('modal-cancelar').classList.add('open');
+}
+function confirmarCancelamento() {
+  const motivo = document.getElementById('motivo-cancelamento').value.trim();
+  if (!motivo) { toast('Informe o motivo do cancelamento.', 'error'); return; }
+  document.getElementById('modal-cancelar').classList.remove('open');
+  toast(`Recibo ${_reciboParaCancelar} cancelado.`);
+}
+document.getElementById('modal-cancelar').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+// ── MODAL DETALHE DEMANDA ──
+const subtasksData = {
+  'DCTF Mensal':          ['Apuração PIS/COFINS','Transmissão Receita'],
+  'Folha de Pagamento':   ['Cálculo da folha','Homologação','Envio eSocial'],
+  'Apuração Simples':     ['Geração do DAS'],
+  'Balancete Mensal':     [],
+};
+function openDemandaDetail(empresa, tipo, setor, status, prazo, pct) {
+  document.getElementById('dd-title').textContent = tipo;
+  document.getElementById('dd-empresa').textContent = empresa;
+  document.getElementById('dd-prazo').textContent = prazo;
+  const statusColors = { 'Concluída':'b-green','Em Andamento':'b-yellow','Pendente':'b-gray','Atrasada':'b-red' };
+  const setorColors  = { 'Fiscal':'b-orange','Pessoal':'b-blue','Contábil':'b-purple' };
+  document.getElementById('dd-meta').innerHTML =
+    `<span class="badge ${setorColors[setor]||'b-gray'}">${setor}</span>
+     <span class="badge ${statusColors[status]||'b-gray'}">${status}</span>`;
+  const fill = document.getElementById('dd-prog-fill');
+  const colorClass = pct===100?'g':pct>=50?'y':'r';
+  fill.style.width = pct+'%'; fill.className = `prog-fill ${colorClass}`;
+  document.getElementById('dd-prog-pct').textContent = pct+'%';
+  document.getElementById('dd-status-sel').value = status === 'Atrasada' ? 'Em Andamento' : status;
+  // subtasks
+  const subs = subtasksData[tipo] || [];
+  const ul = document.getElementById('dd-subtasks');
+  if (subs.length === 0) {
+    ul.innerHTML = '<li style="font-size:13px;color:#9CA3AF;font-style:italic;">Sem subtarefas configuradas para este tipo de demanda.</li>';
+  } else {
+    ul.innerHTML = subs.map((s,i) => `
+      <li class="subtask-item">
+        <input type="checkbox" id="sub${i}" ${pct===100?'checked':i<Math.round(subs.length*(pct/100))?'checked':''}/>
+        <label for="sub${i}" class="${pct===100?'done':''}">${s}</label>
+      </li>`).join('');
+  }
+  document.getElementById('modal-demanda').classList.add('open');
+}
+function salvarDemanda() {
+  document.getElementById('modal-demanda').classList.remove('open');
+  toast('Demanda atualizada com sucesso!');
+}
+document.getElementById('modal-demanda').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+// ── TABS DEMANDAS ──
+function switchTab(el, showId) {
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+  el.classList.add('act');
+  ['tab-demandas','tab-tipos'].forEach(id => {
+    const el2 = document.getElementById(id);
+    if (el2) el2.style.display = id === showId ? 'block' : 'none';
+  });
+}
+
+// ── TABS CADASTRO EMPRESA ──
+function switchEmpresaTab(el, showId) {
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+  el.classList.add('act');
+  ['empresa-tab-dados','empresa-tab-vinculos'].forEach(id => {
+    const d = document.getElementById(id);
+    if (d) d.style.display = id === showId ? 'block' : 'none';
+  });
+}
+function switchEmpresaTabByName(showId) {
+  const tabs = document.querySelectorAll('#page-cadastro-empresa .tab');
+  tabs.forEach(t => t.classList.remove('act'));
+  ['empresa-tab-dados','empresa-tab-vinculos'].forEach((id,i) => {
+    const d = document.getElementById(id);
+    if (d) d.style.display = id === showId ? 'block' : 'none';
+    if (id === showId && tabs[i]) tabs[i].classList.add('act');
+  });
+}
+
+// ── RECIBO PREVIEW ──
+function updatePreview() {
+  const v = document.getElementById('recibo-valor')?.value || '';
+  const num = parseFloat(v.replace(/\./g,'').replace(',','.')) || 0;
+  const fmt = num.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const el = document.getElementById('prev-valor');
+  if (el) el.textContent = fmt;
+}
+
+// ── MÁSCARA CNPJ ──
+function mascaraCNPJ(input) {
+  let v = input.value.replace(/\D/g,'').slice(0,14);
+  v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v = v.replace(/(\d{4})(\d)/,'$1-$2');
+  input.value = v;
+}
+
+// ── FORMA "OUTRO" ──
+function toggleOutro() {
+  const sel = document.getElementById('forma-pag');
+  const div = document.getElementById('outro-desc');
+  if (div) div.style.display = sel?.value === 'outro' ? 'block' : 'none';
+}
+
+// ── ESC fecha modais ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['modal','modal-cancelar','modal-demanda'].forEach(id => {
+      document.getElementById(id)?.classList.remove('open');
+    });
+  }
+});
+</script>
+</body>
+</html>
